@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<savedqueries xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <savedquery>
+    <IsCustomizable>1</IsCustomizable>
+    <CanBeDeleted>0</CanBeDeleted>
+    <isquickfindquery>0</isquickfindquery>
+    <isprivate>0</isprivate>
+    <isdefault>1</isdefault>
+    <savedqueryid>{07b375d0-dc94-453e-b3ef-2f6338acf875}</savedqueryid>
+    <layoutxml>
+      <grid name="resultset" jump="new_pmname" select="1" icon="1" preview="1">
+        <row name="result" id="new_pmandpmotableid">
+          <cell name="new_pmname" width="300" />
+          <cell name="new_pmrolesandresp" width="150" />
+          <cell name="new_projectname" width="150" />
+          <cell name="new_pmoname" width="150" />
+          <cell name="new_pmoid" width="150" />
+          <cell name="new_projectnamemapped" width="150" />
+        </row>
+      </grid>
+    </layoutxml>
+    <querytype>0</querytype>
+    <fetchxml>
+      <fetch version="1.0" mapping="logical">
+        <entity name="new_pmandpmotable">
+          <attribute name="new_pmandpmotableid" />
+          <attribute name="new_pmname" />
+          <attribute name="createdon" />
+          <order attribute="new_pmname" descending="false" />
+          <filter type="and">
+            <condition attribute="statecode" operator="eq" value="0" />
+          </filter>
+          <attribute name="new_pmrolesandresp" />
+          <attribute name="new_projectname" />
+          <attribute name="new_pmoname" />
+          <attribute name="new_pmoid" />
+          <attribute name="new_projectnamemapped" />
+        </entity>
+      </fetch>
+    </fetchxml>
+    <IntroducedVersion>1.0</IntroducedVersion>
+    <LocalizedNames>
+      <LocalizedName description="Active PM AND PMO Tables" languagecode="1033" />
+    </LocalizedNames>
+  </savedquery>
+</savedqueries>
