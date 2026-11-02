@@ -1,0 +1,56 @@
+name: Export Solution from DEV
+
+on:
+  workflow_dispatch:
+
+env:
+  SOLUTION_NAME:  NEWSOLUTIONFROMDEVTOUAT
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    environment: dev
+
+    permissions:
+      contents: write
+
+    steps:
+
+      # 1. Get the GitHub repository
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. Install Microsoft Power Platform Actions
+      - name: Install Power Platform Actions
+        uses: microsoft/powerplatform-actions/actions-install@v1
+
+      # 3. Export the solution from DEV
+      - name: Export solution from DEV
+        uses: microsoft/powerplatform-actions/export-solution@v1
+        with:
+          environment-url: ${{ secrets.DEV_ENV_URL }}
+          app-id: ${{ secrets.DEV_CLIENT_ID }}
+          client-secret: ${{ secrets.DEV_CLIENT_SECRET }}
+          tenant-id: ${{ secrets.DEV_TENANT_ID }}
+          solution-name: ${{ env.SOLUTION_NAME }}
+          solution-output-file: out/${{ env.SOLUTION_NAME }}.zip
+          managed: false
+
+      # 4. Unpack the exported ZIP
+      - name: Unpack solution
+        uses: microsoft/powerplatform-actions/unpack-solution@v1
+        with:
+          solution-file: out/${{ env.SOLUTION_NAME }}.zip
+          solution-folder: out/solutions/${{ env.SOLUTION_NAME }}
+          solution-type: Unmanaged
+          overwrite-files: true
+
+      # 5. Create a separate GitHub branch with the solution changes
+      - name: Create solution branch
+        uses: microsoft/powerplatform-actions/branch-solution@v1
+        with:
+          solution-folder: out/solutions/${{ env.SOLUTION_NAME }}
+          solution-target-folder: solutions/${{ env.SOLUTION_NAME }}
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+          branch-name: solution-export-${{ github.run_number }}
+          allow-empty-commit: false
