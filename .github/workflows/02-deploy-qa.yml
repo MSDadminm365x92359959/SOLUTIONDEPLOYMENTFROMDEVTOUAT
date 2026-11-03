@@ -1,0 +1,57 @@
+name: 02 - Deploy Unmanaged Solution to QA
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy-to-qa:
+    name: Deploy Unmanaged Solution to QA
+    runs-on: windows-latest
+    environment: QA
+
+    steps:
+
+      # Step 1 - Get solution files from GitHub
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: main
+
+      # Step 2 - Pack the unpacked GitHub solution as UNMANAGED
+      - name: Pack solution as Unmanaged
+        uses: microsoft/powerplatform-actions/pack-solution@v1
+        with:
+          solution-folder: solutions/${{ vars.SOLUTION_NAME }}
+          solution-file: out/${{ vars.SOLUTION_NAME }}.zip
+          solution-type: Unmanaged
+
+      # Step 3 - Check connection to QA
+      - name: Verify QA connection
+        uses: microsoft/powerplatform-actions/who-am-i@v1
+        with:
+          environment-url: ${{ vars.QA_ENV_URL }}
+          app-id: ${{ vars.QA_CLIENT_ID }}
+          client-secret: ${{ secrets.QA_SECRET_VALUE }}
+          tenant-id: ${{ vars.QA_TENANT_ID }}
+
+      # Step 4 - Import unmanaged solution into QA
+      - name: Import Unmanaged Solution to QA
+        uses: microsoft/powerplatform-actions/import-solution@v1
+        with:
+          environment-url: ${{ vars.QA_ENV_URL }}
+          app-id: ${{ vars.QA_CLIENT_ID }}
+          client-secret: ${{ secrets.QA_SECRET_VALUE }}
+          tenant-id: ${{ vars.QA_TENANT_ID }}
+          solution-file: out/${{ vars.SOLUTION_NAME }}.zip
+          force-overwrite: true
+          publish-changes: true
+
+      # Step 5 - Keep ZIP as GitHub artifact
+      - name: Upload Unmanaged Solution Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ vars.SOLUTION_NAME }}-unmanaged-${{ github.run_number }}
+          path: out/${{ vars.SOLUTION_NAME }}.zip
